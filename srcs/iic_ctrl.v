@@ -30,7 +30,6 @@ module iic_ctrl
     
 localparam CLK_FREQ = 50_000_000;
 //慢速：400khz,中速：1.6Mhz,快速:4Mhz，对应scl频率分别为100k、400k、1M
-//localparam FREQ_IIC_CLK = (WR_SPEED == "low") ? 400_000 : (WR_SPEED == "medium") ? 1_600_000 : 4_000_000;
 localparam FREQ_IIC_CLK = (SPEED == "low") ? 400_000 : (SPEED == "medium") ? 1_600_000 : 4_000_000;
 //分频计数
 localparam IIC_CLK_CNT_MAX = 50_000_000/FREQ_IIC_CLK;
@@ -185,7 +184,6 @@ always@(posedge clk or negedge rst_n) begin
                         2'b11: begin
                             scl_wr <= 0;
                             sda_wr <= 0;
-//                            bits_cnt <= bits_cnt + 3'b1;
                         end
                     endcase
                 end
@@ -438,7 +436,6 @@ always@(posedge clk or negedge rst_n) begin
                         2'b11: begin
                             scl_rd <= 0;
                             sda_rd <= sda_rd;
-//                            bits_cnt_rd <= bits_cnt_rd + 3'b1;
                         end
                     endcase
                 end
@@ -470,11 +467,6 @@ always@(posedge clk or negedge rst_n) begin
                     scldiv4_cnt_rd <= scldiv4_cnt_rd + 1;
                     case(scldiv4_cnt_rd)
                         2'b00: begin
-//                            if(last_state == RD_SEND_SLAVE_ADDR || last_state == RD_SEND_DATA_ADDR || rd_data_cnt < RD_DATA_BYTE_NUM) begin
-//                                sda_rd <= 0;
-//                            end else begin
-//                                sda_rd <= 1;
-//                            end
                             if(rd_data_cnt == RD_DATA_BYTE_NUM) begin
                                 sda_rd <= 1;
                             end else begin
@@ -536,7 +528,6 @@ always@(posedge clk or negedge rst_n) begin
                         end
                         2'b10: begin
                             scl_rd <= scl_rd;
-                            // 在SCL高电平期间采样SDA，符合I2C时序规范
                             rd_data[(RD_DATA_BYTE_NUM-rd_data_cnt)*8-1-bits_cnt_rd] <= iic_sda;
                             if(bits_cnt_rd == 3'b111) begin
                                 rd_data_cnt <= (rd_data_cnt == RD_DATA_BYTE_NUM) ? 0 : rd_data_cnt + 1; 
